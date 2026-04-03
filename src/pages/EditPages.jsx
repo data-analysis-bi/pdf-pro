@@ -2,44 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FileUploader } from '../components/FileUploader';
 import { ProcessingOverlay } from '../components/ProcessingOverlay';
-import { rotatePDFPages, deletePages, reorderPages, downloadPDF } from '../utils/pdfUtils';
-import { ArrowLeft, Download, RotateCw, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
+import { downloadPDF } from '../utils/pdfUtils';
+import { 
+  ArrowLeft, Download, RotateCw, RotateCcw, 
+  Trash2, ArrowUp, ArrowDown, MoveHorizontal,
+  CheckCircle2, RefreshCcw, ChevronLeft, ChevronRight,
+  ChevronsLeft, ChevronsRight
+} from 'lucide-react';
 import { toast, Toaster } from 'sonner';
-
-function PageThumb({ pageNum, isSelected, onToggle, onRotate, onDelete, onMoveUp, onMoveDown, isFirst, isLast, idx }) {
-  return (
-    <div style={{
-      border: `2px solid ${isSelected ? '#e53e3e' : '#e2e8f0'}`,
-      borderRadius: 10,
-      padding: 12,
-      background: isSelected ? 'rgba(229,62,62,0.05)' : '#fff',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: 8,
-      cursor: 'pointer',
-      userSelect: 'none',
-      transition: 'all 0.15s',
-    }}>
-      <div onClick={onToggle} style={{
-        width: 60, height: 80,
-        background: '#f7fafc',
-        border: '1px solid #e2e8f0',
-        borderRadius: 4,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, color: '#718096', fontWeight: 600,
-      }}>p.{pageNum}</div>
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
-        <button title="Rotate" onClick={onRotate} style={{ padding: 4, border: 'none', background: 'transparent', cursor: 'pointer', color: '#718096', display: 'flex', alignItems: 'center' }}>
-          <RotateCw size={13} />
-        </button>
-        {!isFirst && <button title="Move Up" onClick={onMoveUp} style={{ padding: 4, border: 'none', background: 'transparent', cursor: 'pointer', color: '#718096', display: 'flex' }}><ArrowUp size={13} /></button>}
-        {!isLast && <button title="Move Down" onClick={onMoveDown} style={{ padding: 4, border: 'none', background: 'transparent', cursor: 'pointer', color: '#718096', display: 'flex' }}><ArrowDown size={13} /></button>}
-        <button title="Delete" onClick={onDelete} style={{ padding: 4, border: 'none', background: 'transparent', cursor: 'pointer', color: '#e53e3e', display: 'flex' }}><Trash2 size={13} /></button>
-      </div>
-    </div>
-  );
-}
 
 export const EditPages = () => {
   const [files, setFiles] = useState([]);
@@ -48,23 +18,65 @@ export const EditPages = () => {
   const [order, setOrder] = useState([]); // current page order (0-based original indices)
   const [rotations, setRotations] = useState({}); // { originalIndex: totalDeg }
   const [deleted, setDeleted] = useState(new Set());
+  const [selectedPages, setSelectedPages] = useState(new Set());
+  const [thumbnails, setThumbnails] = useState({}); // { originalIndex: dataUrl }
+  const [activeTab, setActiveTab] = useState('rotate');
+  const [loadingThumbs, setLoadingThumbs] = useState(false);
 
+  // Generate thumbnails when file changes
   useEffect(() => {
     const load = async () => {
       if (files.length > 0) {
-        const { PDFDocument } = await import('pdf-lib');
-        const ab = await files[0].arrayBuffer();
-        const doc = await PDFDocument.load(ab);
-        const count = doc.getPageCount();
-        setPageCount(count);
-        setOrder(Array.from({ length: count }, (_, i) => i));
-        setRotations({});
-        setDeleted(new Set());
+        setLoadingThumbs(true);
+        try {
+          const { PDFDocument } = await import('pdf-lib');
+          const pdfjsLib = await import('pdfjs-dist');
+          
+          // Setup worker correctly
+          pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+            'pdfjs-dist/build/pdf.worker.min.mjs',
+            import.meta.url
+          ).toString();
+
+          const ab = await files[0].arrayBuffer();
+          const doc = await PDFDocument.load(ab);
+          const count = doc.getPageCount();
+          setPageCount(count);
+          setOrder(Array.from({ length: count }, (_, i) => i));
+          setRotations({});
+          setDeleted(new Set());
+          setSelectedPages(new Set());
+          
+          // Load PDF for thumbnails
+          const loadingTask = pdfjsLib.getDocument({ data: ab });
+          const pdf = await loadingTask.promise;
+          const thumbs = {};
+          
+          for (let i = 1; i <= count; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 0.3 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({ canvasContext: context, viewport }).promise;
+            thumbs[i - 1] = canvas.toDataURL();
+          }
+          setThumbnails(thumbs);
+        } catch (e) {
+          console.error(e);
+          toast.error('Failed to load PDF thumbnails');
+        } finally {
+          setLoadingThumbs(false);
+        }
       } else {
         setPageCount(0);
         setOrder([]);
         setRotations({});
         setDeleted(new Set());
+        setSelectedPages(new Set());
+        setThumbnails({});
       }
     };
     load();
@@ -72,26 +84,85 @@ export const EditPages = () => {
 
   const visibleOrder = order.filter(i => !deleted.has(i));
 
-  const handleRotate = (origIdx) => {
-    setRotations(prev => ({ ...prev, [origIdx]: ((prev[origIdx] || 0) + 90) % 360 }));
+  const toggleSelection = (idx, e) => {
+    const next = new Set(selectedPages);
+    if (next.has(idx)) {
+      next.delete(idx);
+    } else {
+      next.add(idx);
+    }
+    setSelectedPages(next);
   };
 
-  const handleDelete = (origIdx) => {
-    setDeleted(prev => new Set([...prev, origIdx]));
+  const handleBulkRotate = (deg) => {
+    if (selectedPages.size === 0) return toast.error('Select pages to rotate');
+    const next = { ...rotations };
+    selectedPages.forEach(idx => {
+      next[idx] = ((next[idx] || 0) + deg + 360) % 360;
+    });
+    setRotations(next);
+    toast.success(`Rotated ${selectedPages.size} page(s)`);
   };
 
-  const handleMoveUp = (posInVisible) => {
-    const newVisible = [...visibleOrder];
-    [newVisible[posInVisible - 1], newVisible[posInVisible]] = [newVisible[posInVisible], newVisible[posInVisible - 1]];
-    const deletedArr = [...deleted];
+  const handleBulkDelete = () => {
+    if (selectedPages.size === 0) return toast.error('Select pages to delete');
+    const next = new Set(deleted);
+    selectedPages.forEach(idx => next.add(idx));
+    setDeleted(next);
+    setSelectedPages(new Set());
+    toast.success(`Deleted ${selectedPages.size} page(s)`);
+  };
+
+  const handleMove = (direction) => {
+    if (selectedPages.size === 0) return toast.error('Select pages to move');
+    
+    // Sort selected indices based on their current position in visibleOrder
+    const selectedArr = Array.from(selectedPages).sort((a, b) => {
+      return visibleOrder.indexOf(a) - visibleOrder.indexOf(b);
+    });
+
+    let newVisible = [...visibleOrder];
+    
+    if (direction === 'start') {
+      const remaining = newVisible.filter(idx => !selectedPages.has(idx));
+      newVisible = [...selectedArr, ...remaining];
+    } else if (direction === 'end') {
+      const remaining = newVisible.filter(idx => !selectedPages.has(idx));
+      newVisible = [...remaining, ...selectedArr];
+    } else {
+      // Move Left/Right logic
+      const moveLeft = direction === 'left';
+      const step = moveLeft ? -1 : 1;
+      
+      // Can't move left if first element is at index 0
+      if (moveLeft && newVisible.indexOf(selectedArr[0]) === 0) return;
+      // Can't move right if last element is at the end
+      if (!moveLeft && newVisible.indexOf(selectedArr[selectedArr.length - 1]) === newVisible.length - 1) return;
+
+      // Extract and swap
+      const remaining = newVisible.filter(idx => !selectedPages.has(idx));
+      const firstIdx = newVisible.indexOf(selectedArr[0]);
+      const lastIdx = newVisible.indexOf(selectedArr[selectedArr.length - 1]);
+      
+      if (moveLeft) {
+        newVisible.splice(firstIdx, selectedArr.length);
+        newVisible.splice(firstIdx - 1, 0, ...selectedArr);
+      } else {
+        newVisible.splice(firstIdx, selectedArr.length);
+        newVisible.splice(firstIdx + 1, 0, ...selectedArr);
+      }
+    }
+    
+    const deletedArr = Array.from(deleted);
     setOrder([...newVisible, ...deletedArr]);
   };
 
-  const handleMoveDown = (posInVisible) => {
-    const newVisible = [...visibleOrder];
-    [newVisible[posInVisible], newVisible[posInVisible + 1]] = [newVisible[posInVisible + 1], newVisible[posInVisible]];
-    const deletedArr = [...deleted];
-    setOrder([...newVisible, ...deletedArr]);
+  const startOver = () => {
+    setOrder(Array.from({ length: pageCount }, (_, i) => i));
+    setRotations({});
+    setDeleted(new Set());
+    setSelectedPages(new Set());
+    toast.info('Changes reset');
   };
 
   const handleApply = async () => {
@@ -102,8 +173,8 @@ export const EditPages = () => {
       const ab = await files[0].arrayBuffer();
       let pdfDoc = await PDFDocument.load(ab);
 
-      // First apply rotations
       const pages = pdfDoc.getPages();
+      // Apply rotations stored in state
       Object.entries(rotations).forEach(([idx, angle]) => {
         if (angle) {
           const current = pages[+idx].getRotation().angle;
@@ -111,25 +182,26 @@ export const EditPages = () => {
         }
       });
 
-      // Then reorder (excluding deleted)
       const newPdf = await PDFDocument.create();
       const copies = await newPdf.copyPages(pdfDoc, visibleOrder);
       copies.forEach(p => newPdf.addPage(p));
 
       const bytes = await newPdf.save();
       downloadPDF(bytes, 'edited_pages.pdf');
-      toast.success(`PDF saved with ${visibleOrder.length} page(s)!`);
+      toast.success(`Success! Generated PDF with ${visibleOrder.length} pages.`);
     } catch (e) {
       console.error(e);
-      toast.error('Failed to edit pages');
+      toast.error('Failed to save changes');
     } finally { setIsProcessing(false); }
   };
 
   return (
-    <div className="page-container">
+    <div className={`page-container ${files.length > 0 ? 'has-footer' : ''}`}>
       <Toaster position="top-center" richColors />
-      <ProcessingOverlay isProcessing={isProcessing} message="Editing pages..." />
+      <ProcessingOverlay isProcessing={isProcessing} message="Saving changes..." />
+      
       <Link to="/" className="page-back"><ArrowLeft size={14} /> All Tools</Link>
+
       <div className="page-header">
         <div className="page-icon" style={{ background: 'rgba(49,151,149,0.1)', color: '#319795' }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} width={26} height={26}>
@@ -138,41 +210,103 @@ export const EditPages = () => {
         </div>
         <div>
           <h1 className="page-title">Edit Pages</h1>
-          <p className="page-subtitle">Rotate, delete, or reorder pages in your PDF</p>
+          <p className="page-subtitle">Rotate, delete, or reorder pages with real-time preview</p>
         </div>
       </div>
+
       <div className="card">
         <FileUploader files={files} setFiles={setFiles} multiple={false} title="Drop a PDF file here" />
       </div>
-      {pageCount > 0 && (
-        <div className="card">
-          <div className="info-box" style={{ marginBottom: 16 }}>
-            Showing {visibleOrder.length} of {pageCount} pages. Deleted: {deleted.size}.
+
+      {files.length > 0 && (
+        <>
+          <div className="edit-toolbar">
+            <div className="edit-tabs">
+              <button className={`edit-tab ${activeTab === 'rotate' ? 'active' : ''}`} onClick={() => setActiveTab('rotate')}>Rotate</button>
+              <button className={`edit-tab ${activeTab === 'delete' ? 'active' : ''}`} onClick={() => setActiveTab('delete')}>Delete</button>
+              <button className={`edit-tab ${activeTab === 'reorder' ? 'active' : ''}`} onClick={() => setActiveTab('reorder')}>Reorder</button>
+              <div className="selection-info">
+                {selectedPages.size} page(s) selected
+              </div>
+            </div>
+
+            <div className="edit-actions">
+              {activeTab === 'rotate' && (
+                <>
+                  <button className="action-btn" onClick={() => handleBulkRotate(-90)} disabled={selectedPages.size === 0}>
+                    <RotateCcw size={16} /> Rotate Left
+                  </button>
+                  <button className="action-btn" onClick={() => handleBulkRotate(90)} disabled={selectedPages.size === 0}>
+                    <RotateCw size={16} /> Rotate Right
+                  </button>
+                </>
+              )}
+              {activeTab === 'delete' && (
+                <button className="action-btn" style={{ color: '#e53e3e' }} onClick={handleBulkDelete} disabled={selectedPages.size === 0}>
+                  <Trash2 size={16} /> Delete Selected
+                </button>
+              )}
+              {activeTab === 'reorder' && (
+                <>
+                  <button className="action-btn" onClick={() => handleMove('start')} title="Move to Start" disabled={selectedPages.size === 0}>
+                    <ChevronsLeft size={16} />
+                  </button>
+                  <button className="action-btn" onClick={() => handleMove('left')} disabled={selectedPages.size === 0}>
+                    <ChevronLeft size={16} /> Move Left
+                  </button>
+                  <button className="action-btn" onClick={() => handleMove('right')} disabled={selectedPages.size === 0}>
+                    Move Right <ChevronRight size={16} />
+                  </button>
+                  <button className="action-btn" onClick={() => handleMove('end')} title="Move to End" disabled={selectedPages.size === 0}>
+                    <ChevronsRight size={16} />
+                  </button>
+                </>
+              )}
+              {selectedPages.size > 0 && (
+                <button className="action-btn" onClick={() => setSelectedPages(new Set())} style={{ marginLeft: 'auto' }}>
+                  Clear Selection
+                </button>
+              )}
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 12 }}>
-            {visibleOrder.map((origIdx, pos) => (
-              <PageThumb
-                key={origIdx}
-                pageNum={origIdx + 1}
-                isSelected={false}
-                onToggle={() => {}}
-                onRotate={() => handleRotate(origIdx)}
-                onDelete={() => handleDelete(origIdx)}
-                onMoveUp={() => handleMoveUp(pos)}
-                onMoveDown={() => handleMoveDown(pos)}
-                isFirst={pos === 0}
-                isLast={pos === visibleOrder.length - 1}
-                idx={pos}
-              />
-            ))}
+
+          <div className="card" style={{ minHeight: 300, background: 'transparent', border: 'none', padding: 0 }}>
+            {loadingThumbs ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 200, color: '#718096' }}>
+                <div className="overlay-spinner" style={{ marginBottom: 12 }} />
+                <p>Generating page previews...</p>
+              </div>
+            ) : (
+              <div className="thumb-grid">
+                {visibleOrder.map((origIdx) => (
+                  <div 
+                    key={origIdx}
+                    className={`thumb-item ${selectedPages.has(origIdx) ? 'selected' : ''}`}
+                    onClick={(e) => toggleSelection(origIdx, e)}
+                  >
+                    <div className="thumb-num">{origIdx + 1}</div>
+                    <img 
+                      src={thumbnails[origIdx]} 
+                      alt={`Page ${origIdx + 1}`} 
+                      className="thumb-img"
+                      style={{ transform: `rotate(${rotations[origIdx] || 0}deg)`, transition: 'transform 0.2s ease' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
+
+          <footer className="footer-actions">
+            <button className="btn-secondary" onClick={startOver}>
+              <RefreshCcw size={16} /> Start Over
+            </button>
+            <button className="btn-primary" onClick={handleApply} disabled={isProcessing}>
+              <Download size={16} /> Apply Changes
+            </button>
+          </footer>
+        </>
       )}
-      <div className="action-row">
-        <button className="btn-primary" onClick={handleApply} disabled={!files.length || isProcessing}>
-          <Download size={15} /> Save Changes
-        </button>
-      </div>
     </div>
   );
 };

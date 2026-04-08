@@ -56,13 +56,13 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
 > Replace these with real screenshots later.
 
 <p align="center">
-  <img src="screenshots/dark mode.png" width="700" />
+  <img src="screenshots/Dark mode.png" width="700" />
   <br/>
   <em>Home Screen</em>
 </p>
 
 <p align="center">
-  <img src="assets/screenshot-tools.png" width="700" />
+  <img src="screenshots/Dark mode.png" width="700" />
   <br/>
   <em>PDF Tools Interface</em>
 </p>

@@ -14,20 +14,20 @@ export const Watermark = () => {
   // Text watermark options
   const [text, setText] = useState('CONFIDENTIAL');
   const [fontSize, setFontSize] = useState(48);
-  const [opacity, setOpacity] = useState(0.3);           // 0.0 - 1.0
-  const [color, setColor] = useState('#808080');
+  const [color, setColor] = useState('#ef4444'); // Default red like your screenshot
+  const [opacity, setOpacity] = useState(0.3);
 
   // iLovePDF-style options
   const [mode, setMode] = useState('text'); // 'text' | 'image'
-  const [position, setPosition] = useState('center');   // center, top-left, top-center, etc.
+  const [position, setPosition] = useState('center');
   const [isMosaic, setIsMosaic] = useState(false);
-  const [transparencyLevel, setTransparencyLevel] = useState(30); // 0 = no transparency (opaque), 25, 50, 75
-  const [rotation, setRotation] = useState(0);          // 0, 45, 90, 180, 270, -45, etc.
+  const [transparencyLevel, setTransparencyLevel] = useState(0); // 0 = No transparency
+  const [rotation, setRotation] = useState(0);
   const [fromPage, setFromPage] = useState(1);
   const [toPage, setToPage] = useState(1);
-  const [layer, setLayer] = useState('over');           // 'over' | 'below'
+  const [layer, setLayer] = useState('over'); // 'over' | 'below'
 
-  // Load page count when file changes
+  // Load PDF page count
   useEffect(() => {
     const loadPages = async () => {
       if (files.length > 0) {
@@ -47,15 +47,9 @@ export const Watermark = () => {
   }, [files]);
 
   const positions = [
-    { id: 'top-left', label: '' },
-    { id: 'top-center', label: '' },
-    { id: 'top-right', label: '' },
-    { id: 'middle-left', label: '' },
-    { id: 'center', label: '' },
-    { id: 'middle-right', label: '' },
-    { id: 'bottom-left', label: '' },
-    { id: 'bottom-center', label: '' },
-    { id: 'bottom-right', label: '' },
+    'top-left', 'top-center', 'top-right',
+    'middle-left', 'center', 'middle-right',
+    'bottom-left', 'bottom-center', 'bottom-right'
   ];
 
   const hexToRgb = (hex) => {
@@ -76,15 +70,14 @@ export const Watermark = () => {
         mode,
         text: text.trim(),
         fontSize,
-        opacity: opacity,                    // or calculate from transparencyLevel
         color: hexToRgb(color),
+        opacity: (100 - transparencyLevel) / 100,   // Convert transparency to opacity
         position,
         mosaic: isMosaic,
         rotation,
         fromPage,
-        toPage: Math.min(toPage, pageCount),
+        toPage: Math.min(toPage || 1, pageCount || 1),
         layer,
-        // Add image support later: watermarkImage: file
       };
 
       const bytes = await addWatermark(files[0], options);
@@ -97,9 +90,6 @@ export const Watermark = () => {
       setIsProcessing(false);
     }
   };
-
-  // Live preview opacity (for text only)
-  const previewOpacity = mode === 'text' ? opacity : 0.6;
 
   return (
     <div className="page-container">
@@ -127,212 +117,240 @@ export const Watermark = () => {
       </div>
 
       {files.length > 0 && (
-        <>
-          {/* Watermark Options Panel */}
-          <div className="card" style={{ marginTop: 24 }}>
-            <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: 16, marginBottom: 20 }}>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                <button
-                  className={`tab-btn ${mode === 'text' ? 'active' : ''}`}
-                  onClick={() => setMode('text')}
-                  style={{ flex: 1 }}
-                >
-                  <span style={{ marginRight: 6 }}>𝐀</span> Place text
-                </button>
-                <button
-                  className={`tab-btn ${mode === 'image' ? 'active' : ''}`}
-                  onClick={() => setMode('image')}
-                  style={{ flex: 1 }}
-                >
-                  Place image
-                </button>
-              </div>
-            </div>
-
-            {mode === 'text' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <div>
-                  <label className="label">Text</label>
-                  <input
-                    className="input"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Enter watermark text"
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label className="label">Font Size: {fontSize}px</label>
-                    <input
-                      type="range"
-                      min={20}
-                      max={120}
-                      value={fontSize}
-                      onChange={(e) => setFontSize(+e.target.value)}
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                  <div>
-                    <label className="label">Color</label>
-                    <input
-                      type="color"
-                      value={color}
-                      onChange={(e) => setColor(e.target.value)}
-                      style={{ width: '100%', height: 44, borderRadius: 8, cursor: 'pointer' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Position Grid + Mosaic */}
-                <div>
-                  <label className="label">Position</label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginTop: 8 }}>
-                    {positions.map((pos) => (
-                      <button
-                        key={pos.id}
-                        onClick={() => setPosition(pos.id)}
-                        className={`position-btn ${position === pos.id ? 'active' : ''}`}
-                        style={{
-                          height: 52,
-                          border: position === pos.id ? '2px solid #3182ce' : '1px solid #cbd5e0',
-                          background: position === pos.id ? '#ebf8ff' : '#fff',
-                          borderRadius: 6,
-                        }}
-                      >
-                        {pos.id === 'center' ? '●' : ''}
-                      </button>
-                    ))}
-                  </div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, fontSize: 14 }}>
-                    <input
-                      type="checkbox"
-                      checked={isMosaic}
-                      onChange={(e) => setIsMosaic(e.target.checked)}
-                    />
-                    Mosaic (repeat across page)
-                  </label>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label className="label">Transparency</label>
-                    <select
-                      value={transparencyLevel}
-                      onChange={(e) => {
-                        setTransparencyLevel(+e.target.value);
-                        setOpacity((100 - +e.target.value) / 100);
-                      }}
-                      className="input"
-                    >
-                      <option value={0}>No transparency</option>
-                      <option value={25}>25%</option>
-                      <option value={50}>50%</option>
-                      <option value={75}>75%</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="label">Rotation</label>
-                    <select
-                      value={rotation}
-                      onChange={(e) => setRotation(+e.target.value)}
-                      className="input"
-                    >
-                      <option value={0}>Do not rotate</option>
-                      <option value={45}>45°</option>
-                      <option value={90}>90°</option>
-                      <option value={180}>180°</option>
-                      <option value={270}>270°</option>
-                      <option value={-45}>-45°</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Pages Range */}
-                <div>
-                  <label className="label">Pages</label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
-                    <div style={{ flex: 1 }}>
-                      <span style={{ fontSize: 13, color: '#64748b' }}>from page</span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={pageCount}
-                        value={fromPage}
-                        onChange={(e) => setFromPage(Math.max(1, Math.min(pageCount, +e.target.value || 1)))}
-                        className="input"
-                      />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <span style={{ fontSize: 13, color: '#64748b' }}>to</span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={pageCount}
-                        value={toPage}
-                        onChange={(e) => setToPage(Math.max(1, Math.min(pageCount, +e.target.value || 1)))}
-                        className="input"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Layer */}
-                <div>
-                  <label className="label">Layer</label>
-                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                    <button
-                      onClick={() => setLayer('over')}
-                      className={`layer-btn ${layer === 'over' ? 'active' : ''}`}
-                      style={{ flex: 1, padding: '12px', borderRadius: 8 }}
-                    >
-                      Over the PDF content
-                    </button>
-                    <button
-                      onClick={() => setLayer('below')}
-                      className={`layer-btn ${layer === 'below' ? 'active' : ''}`}
-                      style={{ flex: 1, padding: '12px', borderRadius: 8 }}
-                    >
-                      Below the PDF content
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
-                Image watermark support coming soon.<br />
-                (Upload image + same position/transparency options)
-              </div>
-            )}
+        <div className="card" style={{ marginTop: 24 }}>
+          {/* Tabs */}
+          <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginBottom: 24 }}>
+            <button
+              onClick={() => setMode('text')}
+              className={`tab-btn ${mode === 'text' ? 'active' : ''}`}
+              style={{
+                flex: 1,
+                padding: '14px',
+                background: mode === 'text' ? '#ef4444' : 'transparent',
+                color: mode === 'text' ? 'white' : '#64748b',
+                border: 'none',
+                fontWeight: 600,
+                borderRadius: '8px 8px 0 0'
+              }}
+            >
+              <span style={{ marginRight: 6 }}>𝐀</span> Place text
+            </button>
+            <button
+              onClick={() => setMode('image')}
+              className={`tab-btn ${mode === 'image' ? 'active' : ''}`}
+              style={{
+                flex: 1,
+                padding: '14px',
+                background: mode === 'image' ? '#ef4444' : 'transparent',
+                color: mode === 'image' ? 'white' : '#64748b',
+                border: 'none',
+                fontWeight: 600,
+                borderRadius: '8px 8px 0 0'
+              }}
+            >
+              Place image
+            </button>
           </div>
 
-          {/* Live Preview */}
           {mode === 'text' && (
-            <div className="card" style={{ marginTop: 16 }}>
-              <label className="label">Preview</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {/* Text Input */}
+              <div>
+                <label className="label">TEXT</label>
+                <input
+                  className="input"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Enter watermark text"
+                />
+              </div>
+
+              {/* Font Size & Color */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label className="label">FONT SIZE: {fontSize}px</label>
+                  <input
+                    type="range"
+                    min={20}
+                    max={150}
+                    value={fontSize}
+                    onChange={(e) => setFontSize(+e.target.value)}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label className="label">COLOR</label>
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    style={{ width: '100%', height: 48, borderRadius: 8, cursor: 'pointer' }}
+                  />
+                </div>
+              </div>
+
+              {/* Position Grid */}
+              <div>
+                <label className="label">POSITION</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
+                  {positions.map((pos) => (
+                    <button
+                      key={pos}
+                      onClick={() => setPosition(pos)}
+                      className={`position-btn ${position === pos ? 'active' : ''}`}
+                      style={{
+                        height: 52,
+                        border: position === pos ? '2px solid #3b82f6' : '1px solid #cbd5e0',
+                        background: position === pos ? '#dbeafe' : '#fff',
+                        borderRadius: 8,
+                        fontSize: 18,
+                      }}
+                    >
+                      {pos === 'center' ? '●' : ''}
+                    </button>
+                  ))}
+                </div>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, fontSize: 14, cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={isMosaic}
+                    onChange={(e) => setIsMosaic(e.target.checked)}
+                  />
+                  Mosaic (repeat across page)
+                </label>
+              </div>
+
+              {/* Transparency & Rotation */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label className="label">TRANSPARENCY</label>
+                  <select
+                    value={transparencyLevel}
+                    onChange={(e) => setTransparencyLevel(Number(e.target.value))}
+                    className="input"
+                  >
+                    <option value={0}>No transparency</option>
+                    <option value={25}>25%</option>
+                    <option value={50}>50%</option>
+                    <option value={75}>75%</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label">ROTATION</label>
+                  <select
+                    value={rotation}
+                    onChange={(e) => setRotation(Number(e.target.value))}
+                    className="input"
+                  >
+                    <option value={0}>Do not rotate</option>
+                    <option value={45}>45°</option>
+                    <option value={90}>90°</option>
+                    <option value={180}>180°</option>
+                    <option value={270}>270°</option>
+                    <option value={-45}>-45°</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Pages */}
+              <div>
+                <label className="label">PAGES</label>
+                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 13, color: '#64748b' }}>from page</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={pageCount}
+                      value={fromPage}
+                      onChange={(e) => setFromPage(Math.max(1, Math.min(pageCount, +e.target.value || 1)))}
+                      className="input"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 13, color: '#64748b' }}>to</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={pageCount}
+                      value={toPage}
+                      onChange={(e) => setToPage(Math.max(1, Math.min(pageCount, +e.target.value || 1)))}
+                      className="input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Layer */}
+              <div>
+                <label className="label">LAYER</label>
+                <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+                  <button
+                    onClick={() => setLayer('over')}
+                    className={`layer-btn ${layer === 'over' ? 'active' : ''}`}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      border: layer === 'over' ? '2px solid #3b82f6' : '1px solid #cbd5e0',
+                      background: layer === 'over' ? '#dbeafe' : '#fff',
+                      borderRadius: 8,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Over the PDF content
+                  </button>
+                  <button
+                    onClick={() => setLayer('below')}
+                    className={`layer-btn ${layer === 'below' ? 'active' : ''}`}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      border: layer === 'below' ? '2px solid #3b82f6' : '1px solid #cbd5e0',
+                      background: layer === 'below' ? '#dbeafe' : '#fff',
+                      borderRadius: 8,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Below the PDF content
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {mode === 'image' && (
+            <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>
+              Image watermark support coming soon
+            </div>
+          )}
+
+          {/* Preview */}
+          {mode === 'text' && (
+            <div className="card" style={{ marginTop: 24 }}>
+              <label className="label">PREVIEW</label>
               <div
                 style={{
                   background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  border: '2px dashed #e2e8f0',
                   borderRadius: 12,
-                  height: 180,
+                  height: 160,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  position: 'relative',
                   overflow: 'hidden',
                 }}
               >
                 <span
                   style={{
-                    fontSize: Math.max(18, fontSize * 0.45),
+                    fontSize: Math.max(24, fontSize * 0.5),
                     fontWeight: 700,
                     color,
-                    opacity: previewOpacity,
+                    opacity: (100 - transparencyLevel) / 100,
                     transform: `rotate(${rotation}deg)`,
                     whiteSpace: 'nowrap',
                     textTransform: 'uppercase',
-                    letterSpacing: 2,
+                    letterSpacing: 4,
                   }}
                 >
                   {text || 'PREVIEW'}
@@ -340,7 +358,7 @@ export const Watermark = () => {
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
       <div className="action-row">
@@ -348,6 +366,7 @@ export const Watermark = () => {
           className="btn-primary"
           onClick={handleApply}
           disabled={!files.length || isProcessing}
+          style={{ backgroundColor: '#ef4444' }}
         >
           <Download size={15} /> Apply & Download
         </button>

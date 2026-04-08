@@ -14,18 +14,17 @@ export const Watermark = () => {
   // Text watermark options
   const [text, setText] = useState('CONFIDENTIAL');
   const [fontSize, setFontSize] = useState(48);
-  const [color, setColor] = useState('#ef4444'); // Default red like your screenshot
-  const [opacity, setOpacity] = useState(0.3);
+  const [color, setColor] = useState('#ef4444');
+  const [transparencyLevel, setTransparencyLevel] = useState(0);
 
   // iLovePDF-style options
-  const [mode, setMode] = useState('text'); // 'text' | 'image'
+  const [mode, setMode] = useState('text');
   const [position, setPosition] = useState('center');
   const [isMosaic, setIsMosaic] = useState(false);
-  const [transparencyLevel, setTransparencyLevel] = useState(0); // 0 = No transparency
   const [rotation, setRotation] = useState(0);
   const [fromPage, setFromPage] = useState(1);
   const [toPage, setToPage] = useState(1);
-  const [layer, setLayer] = useState('over'); // 'over' | 'below'
+  const [layer, setLayer] = useState('over');
 
   // Load PDF page count
   useEffect(() => {
@@ -64,14 +63,13 @@ export const Watermark = () => {
     if (mode === 'text' && !text.trim()) return toast.error('Please enter watermark text');
 
     setIsProcessing(true);
-
     try {
       const options = {
         mode,
         text: text.trim(),
         fontSize,
         color: hexToRgb(color),
-        opacity: (100 - transparencyLevel) / 100,   // Convert transparency to opacity
+        opacity: (100 - transparencyLevel) / 100,
         position,
         mosaic: isMosaic,
         rotation,
@@ -118,35 +116,19 @@ export const Watermark = () => {
 
       {files.length > 0 && (
         <div className="card" style={{ marginTop: 24 }}>
-          {/* Tabs */}
+          {/* Tabs - Place text / Place image */}
           <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginBottom: 24 }}>
             <button
               onClick={() => setMode('text')}
               className={`tab-btn ${mode === 'text' ? 'active' : ''}`}
-              style={{
-                flex: 1,
-                padding: '14px',
-                background: mode === 'text' ? '#ef4444' : 'transparent',
-                color: mode === 'text' ? 'white' : '#64748b',
-                border: 'none',
-                fontWeight: 600,
-                borderRadius: '8px 8px 0 0'
-              }}
+              style={{ flex: 1, padding: '14px', fontWeight: 600 }}
             >
               <span style={{ marginRight: 6 }}>𝐀</span> Place text
             </button>
             <button
               onClick={() => setMode('image')}
               className={`tab-btn ${mode === 'image' ? 'active' : ''}`}
-              style={{
-                flex: 1,
-                padding: '14px',
-                background: mode === 'image' ? '#ef4444' : 'transparent',
-                color: mode === 'image' ? 'white' : '#64748b',
-                border: 'none',
-                fontWeight: 600,
-                borderRadius: '8px 8px 0 0'
-              }}
+              style={{ flex: 1, padding: '14px', fontWeight: 600 }}
             >
               Place image
             </button>
@@ -154,7 +136,7 @@ export const Watermark = () => {
 
           {mode === 'text' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              {/* Text Input */}
+              {/* Text */}
               <div>
                 <label className="label">TEXT</label>
                 <input
@@ -189,7 +171,7 @@ export const Watermark = () => {
                 </div>
               </div>
 
-              {/* Position Grid */}
+              {/* Position Grid - Now using CSS classes properly */}
               <div>
                 <label className="label">POSITION</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
@@ -198,13 +180,6 @@ export const Watermark = () => {
                       key={pos}
                       onClick={() => setPosition(pos)}
                       className={`position-btn ${position === pos ? 'active' : ''}`}
-                      style={{
-                        height: 52,
-                        border: position === pos ? '2px solid #3b82f6' : '1px solid #cbd5e0',
-                        background: position === pos ? '#dbeafe' : '#fff',
-                        borderRadius: 8,
-                        fontSize: 18,
-                      }}
                     >
                       {pos === 'center' ? '●' : ''}
                     </button>
@@ -253,7 +228,7 @@ export const Watermark = () => {
                 </div>
               </div>
 
-              {/* Pages */}
+              {/* Pages Range */}
               <div>
                 <label className="label">PAGES</label>
                 <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
@@ -282,35 +257,19 @@ export const Watermark = () => {
                 </div>
               </div>
 
-              {/* Layer */}
+              {/* Layer - Now using CSS classes */}
               <div>
                 <label className="label">LAYER</label>
                 <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
                   <button
                     onClick={() => setLayer('over')}
                     className={`layer-btn ${layer === 'over' ? 'active' : ''}`}
-                    style={{
-                      flex: 1,
-                      padding: '14px',
-                      border: layer === 'over' ? '2px solid #3b82f6' : '1px solid #cbd5e0',
-                      background: layer === 'over' ? '#dbeafe' : '#fff',
-                      borderRadius: 8,
-                      fontWeight: 500,
-                    }}
                   >
                     Over the PDF content
                   </button>
                   <button
                     onClick={() => setLayer('below')}
                     className={`layer-btn ${layer === 'below' ? 'active' : ''}`}
-                    style={{
-                      flex: 1,
-                      padding: '14px',
-                      border: layer === 'below' ? '2px solid #3b82f6' : '1px solid #cbd5e0',
-                      background: layer === 'below' ? '#dbeafe' : '#fff',
-                      borderRadius: 8,
-                      fontWeight: 500,
-                    }}
                   >
                     Below the PDF content
                   </button>
@@ -366,7 +325,6 @@ export const Watermark = () => {
           className="btn-primary"
           onClick={handleApply}
           disabled={!files.length || isProcessing}
-          style={{ backgroundColor: '#ef4444' }}
         >
           <Download size={15} /> Apply & Download
         </button>

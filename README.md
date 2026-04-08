@@ -53,20 +53,17 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
 
 ### 🖼️ **Screenshots**
 
-
+<p align="center">
+  <img src="screenshots/Light mode.png" width="700" />
+  <br/>
+  <em>LIGHT MODE </em>
+</p>
 
 <p align="center">
   <img src="screenshots/Dark mode.png" width="700" />
   <br/>
-  <em>Home Screen</em>
+  <em>DARK MODE </em>
 </p>
-
-<p align="center">
-  <img src="screenshots/Light mode.png" width="700" />
-  <br/>
-  <em>PDF Tools Interface</em>
-</p>
-
 ### 🎬 **Demo GIF**
 
 > Add a GIF showing merging/splitting PDFs.

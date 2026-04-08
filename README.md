@@ -2,6 +2,9 @@
 *A blazing‑fast, privacy‑first PDF toolkit built with React + Vite.*
 
 ---
+<p align="center">
+  <img src="public/banner.png" width="100%" />
+</p>
 
 ## 🏷️ **Badges**
 

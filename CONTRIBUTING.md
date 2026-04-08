@@ -11,8 +11,9 @@ We welcome improvements, bug fixes, new features, and documentation updates.
 Click the "Fork" button on GitHub.
 
 ### 2. Clone your fork
+'''
 git clone https://github.com/<your-username>/pdf-pro.git
-
+'''
 ### 3. Create a feature branch
 git checkout -b feature/my-new-feature
 

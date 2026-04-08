@@ -11,26 +11,44 @@ We welcome improvements, bug fixes, new features, and documentation updates.
 Click the "Fork" button on GitHub.
 
 ### 2. Clone your fork
-'''
+```bash
 git clone https://github.com/<your-username>/pdf-pro.git
-'''
+```
+
+
 ### 3. Create a feature branch
+
+```bash
 git checkout -b feature/my-new-feature
+```
+
 
 ### 4. Install dependencies
+```bash
 npm install
+```
+
 
 ### 5. Make your changes
 Follow the existing code style and structure.
 
 ### 6. Run the dev server
+```bash
 npm run dev
+```
+
 
 ### 7. Commit your changes
+```bash
 git commit -m "Add: description of your change"
+```
+
 
 ### 8. Push your branch
+```bash
 git push origin feature/my-new-feature
+```
+
 
 ### 9. Open a Pull Request
 Describe your changes clearly and link any related issues.

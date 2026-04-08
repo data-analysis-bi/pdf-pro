@@ -15,32 +15,29 @@ export const SignPDF = () => {
   const isDrawing = useRef(false);
   const lastPos = useRef(null);
 
-  // Load page count when file is selected
+  // Load PDF page count
   useEffect(() => {
-    const loadPageCount = async () => {
+    const loadPages = async () => {
       if (files.length > 0) {
         try {
           const count = await getPDFPageCount(files[0]);
           setPageCount(count);
         } catch (err) {
-          console.error(err);
           setPageCount(1);
         }
-      } else {
-        setPageCount(0);
       }
     };
-    loadPageCount();
+    loadPages();
   }, [files]);
 
-  // Initialize canvas
+  // Setup canvas styles
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    ctx.strokeStyle = '#1a202c';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#1f2937';
+    ctx.lineWidth = 3.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.fillStyle = '#ffffff';
@@ -63,8 +60,7 @@ export const SignPDF = () => {
 
   const startDraw = (e) => {
     isDrawing.current = true;
-    const canvas = canvasRef.current;
-    lastPos.current = getPos(e, canvas);
+    lastPos.current = getPos(e, canvasRef.current);
   };
 
   const draw = (e) => {
@@ -100,23 +96,22 @@ export const SignPDF = () => {
     const canvas = canvasRef.current;
     if (!canvas) return toast.error('Please draw your signature');
 
-    // Check if signature exists
-    const imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-    const hasContent = imageData.data.some((value, index) => index % 4 === 3 && value > 50);
+    // Check if user actually drew something
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const hasDrawing = imageData.data.some((val, i) => i % 4 === 3 && val > 80);
 
-    if (!hasContent) return toast.error('Please draw your signature first');
+    if (!hasDrawing) return toast.error('Please draw your signature');
 
     setIsProcessing(true);
 
     try {
-      const dataUrl = canvas.toDataURL('image/png', 1.0);
+      const signatureDataUrl = canvas.toDataURL('image/png', 1.0);
 
-      // Place signature nicely at bottom center of first page
-      const bytes = await signPDF(files[0], dataUrl, {
-        x: 180,           // Adjust these values based on your PDF size
-        y: 80,
-        width: 280,
-        height: 90,
+      // Smart signing - centered at bottom of first page
+      const bytes = await signPDF(files[0], signatureDataUrl, {
+        width: 320,
+        height: 100,
         pageIndex: 0,
       });
 
@@ -124,7 +119,7 @@ export const SignPDF = () => {
       toast.success('PDF signed successfully!');
     } catch (e) {
       console.error(e);
-      toast.error('Failed to sign the PDF');
+      toast.error('Failed to sign PDF');
     } finally {
       setIsProcessing(false);
     }
@@ -161,13 +156,11 @@ export const SignPDF = () => {
       {files.length > 0 && (
         <div className="card" style={{ marginTop: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <label className="label" style={{ marginBottom: 0 }}>
-              DRAW YOUR SIGNATURE
-            </label>
+            <label className="label" style={{ marginBottom: 0 }}>DRAW YOUR SIGNATURE</label>
             <button 
               onClick={clearSignature}
               className="btn-secondary"
-              style={{ padding: '6px 14px', fontSize: '13px' }}
+              style={{ padding: '6px 16px', fontSize: '13px' }}
             >
               <Trash2 size={14} /> Clear
             </button>
@@ -177,7 +170,7 @@ export const SignPDF = () => {
             border: '2px dashed #cbd5e0', 
             borderRadius: '12px', 
             background: '#fafafa',
-            padding: '12px'
+            padding: '16px'
           }}>
             <canvas
               ref={canvasRef}
@@ -190,7 +183,7 @@ export const SignPDF = () => {
                 cursor: 'crosshair',
                 touchAction: 'none',
                 background: '#ffffff',
-                boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.03)'
+                boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.04)'
               }}
               onMouseDown={startDraw}
               onMouseMove={draw}
@@ -208,7 +201,7 @@ export const SignPDF = () => {
             marginTop: 10, 
             textAlign: 'center' 
           }}>
-            Signature will be placed at the bottom of page 1
+            Your signature will be placed at the bottom center of page 1
           </p>
         </div>
       )}
@@ -218,7 +211,6 @@ export const SignPDF = () => {
           className="btn-primary"
           onClick={handleSign}
           disabled={!files.length || isProcessing}
-          style={{ backgroundColor: '#ef4444' }}
         >
           <Download size={15} /> Sign & Download
         </button>

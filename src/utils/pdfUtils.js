@@ -93,24 +93,113 @@ export const reorderPages = async (file, newOrder) => {
 };
 
 // Watermark: applies text watermark to all pages
-export const addWatermark = async (file, { text, opacity = 0.3, fontSize = 48, color = { r: 0.5, g: 0.5, b: 0.5 } }) => {
+// ==================== IMPROVED WATERMARK FUNCTION ====================
+export const addWatermark = async (file, options) => {
+  const {
+    text = 'CONFIDENTIAL',
+    fontSize = 60,
+    color = { r: 0, g: 0, b: 0 },
+    opacity = 0.3,
+    position = 'center',
+    mosaic = false,
+    rotation = 45,
+    fromPage = 1,
+    toPage = 1,
+    layer = 'over',        // 'over' or 'below'
+  } = options;
+
   const arrayBuffer = await file.arrayBuffer();
   const pdfDoc = await PDFDocument.load(arrayBuffer);
   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
   const pages = pdfDoc.getPages();
-  pages.forEach((page) => {
+  const startPage = Math.max(0, fromPage - 1);
+  const endPage = Math.min(pages.length, toPage);
+
+  for (let i = startPage; i < endPage; i++) {
+    const page = pages[i];
     const { width, height } = page.getSize();
+
+    let x, y;
+
+    // Calculate position
     const textWidth = font.widthOfTextAtSize(text, fontSize);
-    page.drawText(text, {
-      x: (width - textWidth) / 2,
-      y: height / 2,
+    const textHeight = fontSize * 0.75; // Approximate height
+
+    switch (position) {
+      case 'top-left':
+        x = 40;
+        y = height - 60;
+        break;
+      case 'top-center':
+        x = (width - textWidth) / 2;
+        y = height - 60;
+        break;
+      case 'top-right':
+        x = width - textWidth - 40;
+        y = height - 60;
+        break;
+      case 'middle-left':
+        x = 40;
+        y = height / 2;
+        break;
+      case 'center':
+        x = (width - textWidth) / 2;
+        y = height / 2;
+        break;
+      case 'middle-right':
+        x = width - textWidth - 40;
+        y = height / 2;
+        break;
+      case 'bottom-left':
+        x = 40;
+        y = 60;
+        break;
+      case 'bottom-center':
+        x = (width - textWidth) / 2;
+        y = 60;
+        break;
+      case 'bottom-right':
+        x = width - textWidth - 40;
+        y = 60;
+        break;
+      default:
+        x = (width - textWidth) / 2;
+        y = height / 2;
+    }
+
+    // Draw the watermark
+    page.drawText(text.toUpperCase(), {
+      x,
+      y,
       size: fontSize,
       font,
       color: rgb(color.r, color.g, color.b),
       opacity,
-      rotate: degrees(45),
+      rotate: degrees(rotation),
     });
-  });
+
+    // Mosaic mode - draw multiple times with offset
+    if (mosaic) {
+      const offset = fontSize * 1.8;
+      // Draw additional copies in a grid pattern
+      for (let dx = -2; dx <= 2; dx++) {
+        for (let dy = -2; dy <= 2; dy++) {
+          if (dx === 0 && dy === 0) continue;
+          page.drawText(text.toUpperCase(), {
+            x: x + dx * offset,
+            y: y + dy * offset * 0.6,
+            size: fontSize * 0.85,
+            font,
+            color: rgb(color.r, color.g, color.b),
+            opacity: opacity * 0.6,
+            rotate: degrees(rotation),
+          });
+        }
+      }
+    }
+  }
+
   return await pdfDoc.save();
 };
 

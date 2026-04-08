@@ -53,7 +53,7 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
 
 ### 🖼️ **Screenshots**
 
-> Replace these with real screenshots later.
+
 
 <p align="center">
   <img src="screenshots/Dark mode.png" width="700" />
@@ -62,7 +62,7 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
 </p>
 
 <p align="center">
-  <img src="screenshots/Dark mode.png" width="700" />
+  <img src="screenshots/Light mode.png" width="700" />
   <br/>
   <em>PDF Tools Interface</em>
 </p>

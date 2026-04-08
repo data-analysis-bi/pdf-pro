@@ -3,7 +3,7 @@
 
 ---
 <p align="center">
-  <img src="public/banner.png" width="100%" />
+  <img src="public/banner.jpg" width="100%" />
 </p>
 
 ## 🏷️ **Badges**

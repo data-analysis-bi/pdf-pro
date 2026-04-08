@@ -159,7 +159,7 @@ export const SplitPDF = () => {
       <div className="page-header">
         <div className="page-icon" style={{ background: 'rgba(49,130,206,0.1)', color: '#3182ce' }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} width={26} height={26}>
-            <path d="M12 3v18M3 12l4-4m0 0l4-4M3 12l4 4m-4-4h6M21 12l-4-4m0 0l-4-4M21 12l-4 4m4-4h-6" />
+            <path d="M12 3v18M3 12l4-4m0 0l4-4M3 12l4 4m-4-4h6M21 12l-4-4m0 0l-4-4M21 12l-4 4m4-4h-6"/>
           </svg>
         </div>
         <div>
@@ -179,14 +179,14 @@ export const SplitPDF = () => {
           </div>
 
           <div className="toggle-tabs">
-            <button
-              className={`tab-btn${splitMode === 'range' ? ' active' : ''}`}
+            <button 
+              className={`tab-btn${splitMode === 'range' ? ' active' : ''}`} 
               onClick={() => setSplitMode('range')}
             >
               Split by Range
             </button>
-            <button
-              className={`tab-btn${splitMode === 'extract' ? ' active' : ''}`}
+            <button 
+              className={`tab-btn${splitMode === 'extract' ? ' active' : ''}`} 
               onClick={() => setSplitMode('extract')}
             >
               Extract Pages
@@ -199,32 +199,32 @@ export const SplitPDF = () => {
                 <div key={i} className="range-row">
                   <div className="field">
                     <label className="label">From Page</label>
-                    <input
-                      className="input"
-                      type="number"
-                      min="1"
-                      max={pageCount}
-                      value={range.start ?? ''}
+                    <input 
+                      className="input" 
+                      type="number" 
+                      min="1" 
+                      max={pageCount} 
+                      value={range.start ?? ''} 
                       onChange={(e) => updateRange(i, 'start', e.target.value)}
                       onBlur={() => handleBlur(i, 'start')}
                     />
                   </div>
                   <div className="field">
                     <label className="label">To Page</label>
-                    <input
-                      className="input"
-                      type="number"
-                      min="1"
-                      max={pageCount}
-                      value={range.end ?? ''}
+                    <input 
+                      className="input" 
+                      type="number" 
+                      min="1" 
+                      max={pageCount} 
+                      value={range.end ?? ''} 
                       onChange={(e) => updateRange(i, 'end', e.target.value)}
                       onBlur={() => handleBlur(i, 'end')}
                     />
                   </div>
                   {ranges.length > 1 && (
-                    <button
-                      onClick={() => removeRange(i)}
-                      className="file-remove"
+                    <button 
+                      onClick={() => removeRange(i)} 
+                      className="file-remove" 
                       style={{ width: 40, height: 40, marginBottom: 0, flexShrink: 0 }}
                       title="Remove range"
                     >
@@ -233,9 +233,9 @@ export const SplitPDF = () => {
                   )}
                 </div>
               ))}
-              <button
-                className="btn-secondary"
-                style={{ alignSelf: 'flex-start', marginTop: 4 }}
+              <button 
+                className="btn-secondary" 
+                style={{ alignSelf: 'flex-start', marginTop: 4 }} 
                 onClick={addRange}
               >
                 <Plus size={15} /> Add Range
@@ -244,11 +244,11 @@ export const SplitPDF = () => {
           ) : (
             <div>
               <label className="label">Page Numbers (comma-separated)</label>
-              <input
-                className="input"
-                value={extractPages2}
-                onChange={(e) => setExtractPages2(e.target.value)}
-                placeholder="e.g. 1, 3, 5"
+              <input 
+                className="input" 
+                value={extractPages2} 
+                onChange={(e) => setExtractPages2(e.target.value)} 
+                placeholder="e.g. 1, 3, 5" 
               />
               <p style={{ fontSize: 12, color: '#a0aec0', marginTop: 6 }}>
                 Pages numbered from 1 to {pageCount}
@@ -259,9 +259,9 @@ export const SplitPDF = () => {
       )}
 
       <div className="action-row">
-        <button
-          className="btn-primary"
-          onClick={handleSplit}
+        <button 
+          className="btn-primary" 
+          onClick={handleSplit} 
           disabled={!files.length || isProcessing}
         >
           <Download size={15} /> Split & Download

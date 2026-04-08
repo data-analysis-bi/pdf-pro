@@ -11,22 +11,22 @@ export const Watermark = () => {
   const [pageCount, setPageCount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Text watermark options
+  // Watermark settings
   const [text, setText] = useState('CONFIDENTIAL');
-  const [fontSize, setFontSize] = useState(48);
-  const [color, setColor] = useState('#ef4444');
-  const [transparencyLevel, setTransparencyLevel] = useState(0);
+  const [fontSize, setFontSize] = useState(80);
+  const [color, setColor] = useState('#000000');
+  const [transparencyLevel, setTransparencyLevel] = useState(60);
 
-  // iLovePDF-style options
+  // Layout options
   const [mode, setMode] = useState('text');
   const [position, setPosition] = useState('center');
-  const [isMosaic, setIsMosaic] = useState(false);
-  const [rotation, setRotation] = useState(0);
+  const [isMosaic, setIsMosaic] = useState(true);
+  const [rotation, setRotation] = useState(45);
   const [fromPage, setFromPage] = useState(1);
   const [toPage, setToPage] = useState(1);
   const [layer, setLayer] = useState('over');
 
-  // Load PDF page count
+  // Load page count when file is uploaded
   useEffect(() => {
     const loadPages = async () => {
       if (files.length > 0) {
@@ -63,10 +63,10 @@ export const Watermark = () => {
     if (mode === 'text' && !text.trim()) return toast.error('Please enter watermark text');
 
     setIsProcessing(true);
+
     try {
       const options = {
-        mode,
-        text: text.trim(),
+        text: text.trim().toUpperCase(),
         fontSize,
         color: hexToRgb(color),
         opacity: (100 - transparencyLevel) / 100,
@@ -74,16 +74,16 @@ export const Watermark = () => {
         mosaic: isMosaic,
         rotation,
         fromPage,
-        toPage: Math.min(toPage || 1, pageCount || 1),
+        toPage: Math.min(toPage, pageCount || 1),
         layer,
       };
 
       const bytes = await addWatermark(files[0], options);
-      downloadPDF(bytes, 'watermarked.pdf');
+      downloadPDF(bytes, `watermarked_${files[0].name || 'document.pdf'}`);
       toast.success('Watermark added successfully!');
     } catch (e) {
-      console.error(e);
-      toast.error('Failed to add watermark');
+      console.error("Watermark error:", e);
+      toast.error('Failed to add watermark. Please check console.');
     } finally {
       setIsProcessing(false);
     }
@@ -116,7 +116,7 @@ export const Watermark = () => {
 
       {files.length > 0 && (
         <div className="card" style={{ marginTop: 24 }}>
-          {/* Tabs - Place text / Place image */}
+          {/* Tabs */}
           <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginBottom: 24 }}>
             <button
               onClick={() => setMode('text')}
@@ -143,18 +143,18 @@ export const Watermark = () => {
                   className="input"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Enter watermark text"
+                  placeholder="CONFIDENTIAL"
                 />
               </div>
 
-              {/* Font Size & Color */}
+              {/* Font Size + Color */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
                   <label className="label">FONT SIZE: {fontSize}px</label>
                   <input
                     type="range"
-                    min={20}
-                    max={150}
+                    min={30}
+                    max={200}
                     value={fontSize}
                     onChange={(e) => setFontSize(+e.target.value)}
                     style={{ width: '100%' }}
@@ -171,7 +171,7 @@ export const Watermark = () => {
                 </div>
               </div>
 
-              {/* Position Grid - Now using CSS classes properly */}
+              {/* Position Grid */}
               <div>
                 <label className="label">POSITION</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
@@ -228,12 +228,12 @@ export const Watermark = () => {
                 </div>
               </div>
 
-              {/* Pages Range */}
+              {/* Pages */}
               <div>
                 <label className="label">PAGES</label>
                 <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
                   <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 13, color: '#64748b' }}>from page</span>
+                    from page
                     <input
                       type="number"
                       min="1"
@@ -244,7 +244,7 @@ export const Watermark = () => {
                     />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: 13, color: '#64748b' }}>to</span>
+                    to
                     <input
                       type="number"
                       min="1"
@@ -257,7 +257,7 @@ export const Watermark = () => {
                 </div>
               </div>
 
-              {/* Layer - Now using CSS classes */}
+              {/* Layer */}
               <div>
                 <label className="label">LAYER</label>
                 <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
@@ -278,13 +278,7 @@ export const Watermark = () => {
             </div>
           )}
 
-          {mode === 'image' && (
-            <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>
-              Image watermark support coming soon
-            </div>
-          )}
-
-          {/* Preview */}
+          {/* Live Preview */}
           {mode === 'text' && (
             <div className="card" style={{ marginTop: 24 }}>
               <label className="label">PREVIEW</label>
@@ -293,7 +287,7 @@ export const Watermark = () => {
                   background: '#f8fafc',
                   border: '2px dashed #e2e8f0',
                   borderRadius: 12,
-                  height: 160,
+                  height: 180,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -302,14 +296,14 @@ export const Watermark = () => {
               >
                 <span
                   style={{
-                    fontSize: Math.max(24, fontSize * 0.5),
+                    fontSize: Math.max(28, fontSize * 0.45),
                     fontWeight: 700,
-                    color,
+                    color: color,
                     opacity: (100 - transparencyLevel) / 100,
                     transform: `rotate(${rotation}deg)`,
                     whiteSpace: 'nowrap',
                     textTransform: 'uppercase',
-                    letterSpacing: 4,
+                    letterSpacing: '2px',
                   }}
                 >
                   {text || 'PREVIEW'}

@@ -192,7 +192,6 @@ function App() {
   const [dark, setDark] = useState(false);
 
   return (
-    <BrowserRouter>
       <div className={dark ? 'app dark' : 'app'}>
         {/* HEADER */}
         <header className="header">
@@ -233,7 +232,6 @@ function App() {
           </Routes>
         </main>
       </div>
-    </BrowserRouter>
   );
 }
 

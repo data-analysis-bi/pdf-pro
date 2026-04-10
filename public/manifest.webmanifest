@@ -2,6 +2,8 @@
   "name": "PDFPro",
   "short_name": "PDFPro",
   "start_url": "/pdf-pro/",
+  "id": "/pdf-pro/",
+  "scope": "/pdf-pro/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

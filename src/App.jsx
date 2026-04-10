@@ -190,6 +190,35 @@ function Home({ dark }) {
 
 function App() {
   const [dark, setDark] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  React.useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      setDeferredPrompt(null);
+    } else {
+      alert("App is either already installed or your browser doesn't support it right now.");
+    }
+  };
 
   return (
       <div className={dark ? 'app dark' : 'app'}>
@@ -205,7 +234,7 @@ function App() {
             <Link to="/batch" className="nav-link">
               <Layers size={16} /> Batch
             </Link>
-            <button className="btn-install">
+            <button className="btn-install" onClick={handleInstallClick}>
               <Download size={14} /> Install App
             </button>
             <button className="theme-toggle" onClick={() => setDark(!dark)} aria-label="Toggle theme">

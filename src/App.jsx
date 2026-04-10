@@ -184,6 +184,31 @@ function Home({ dark }) {
           <ToolCard key={tool.id} tool={tool} dark={dark} />
         ))}
       </div>
+      
+      {/* FEATURES FOOTER */}
+      <div className="features-footer">
+        <div className="feature-item">
+          <div className="feature-icon" style={{ color: '#e53e3e', background: 'rgba(229,62,62,0.1)' }}>
+            <Lock size={20} />
+          </div>
+          <h4 className="feature-title">100% Private</h4>
+          <p className="feature-text">All processing happens locally. Your files never leave your computer.</p>
+        </div>
+        <div className="feature-item">
+          <div className="feature-icon" style={{ color: '#3182ce', background: 'rgba(49,130,206,0.1)' }}>
+            <Minimize2 size={20} />
+          </div>
+          <h4 className="feature-title">Works Offline</h4>
+          <p className="feature-text">No internet required. Use all tools without any connection.</p>
+        </div>
+        <div className="feature-item">
+          <div className="feature-icon" style={{ color: '#38a169', background: 'rgba(56,161,105,0.1)' }}>
+            <ScanText size={20} />
+          </div>
+          <h4 className="feature-title">Free Forever</h4>
+          <p className="feature-text">No limits, no subscriptions. All features available for free.</p>
+        </div>
+      </div>
     </div>
   );
 }

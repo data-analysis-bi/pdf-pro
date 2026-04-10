@@ -1,9 +1,9 @@
 {
   "name": "PDFPro",
   "short_name": "PDFPro",
-  "start_url": "/pdf-pro/",
-  "id": "/pdf-pro/",
-  "scope": "/pdf-pro/",
+  "start_url": ".",
+  "id": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

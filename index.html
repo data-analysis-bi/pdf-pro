@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="manifest" href="/pdf-pro/manifest.webmanifest" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PDFPro — All PDF Tools in One Place</title>
     <meta name="description" content="100% offline PDF tools. Merge, split, compress, convert and edit PDFs right in your browser. Your files never leave your device." />
@@ -29,7 +29,7 @@
     <script type="module" src="./src/main.jsx"></script>
     <script>
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/pdf-pro/sw.js")
+    navigator.serviceWorker.register("./sw.js")
   }
 </script>
   </body>

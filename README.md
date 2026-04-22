@@ -6,14 +6,7 @@
   <img src="public/banner.jpg" width="100%" />
 </p>
 
-## 🏷️ **Badges**
 
-<p align="left">
-  <img src="https://img.shields.io/github/stars/data-analysis-bi/pdf-pro?style=for-the-badge" />
-  <img src="https://img.shields.io/github/forks/data-analysis-bi/pdf-pro?style=for-the-badge" />
-  <img src="https://img.shields.io/github/license/data-analysis-bi/pdf-pro?style=for-the-badge" />
-  <img src="https://img.shields.io/github/deployments/data-analysis-bi/pdf-pro/github-pages?label=build&style=for-the-badge" />
-</p>
 
 ### 🧰 **Tech Stack**
 <p align="left">
@@ -64,15 +57,7 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
   <br/>
   <em>DARK MODE </em>
 </p>
-### 🎬 **Demo GIF**
 
-> Add a GIF showing merging/splitting PDFs.
-
-```
-assets/demo.gif
-```
-
----
 
 # 🛠️ **Tech Architecture**
 

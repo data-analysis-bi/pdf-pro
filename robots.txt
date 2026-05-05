@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://data-analysis-bi.github.io/pdf-pro/site.xml

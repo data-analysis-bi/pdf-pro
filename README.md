@@ -1,39 +1,19 @@
-# 📄 **PDFPro — All PDF Tools in One Place**  
-*A blazing‑fast, privacy‑first PDF toolkit built with React + Vite.*
+📄 PDFPro — Privacy‑First, All‑in‑One PDF Toolkit
+PDFPro is a blazing‑fast, privacy‑focused PDF toolkit built with React, Vite, and TailwindCSS. Every operation — merging, splitting, compressing, converting, watermarking, signing — runs 100% locally in your browser.
+No uploads. No servers. No tracking. Just pure client‑side performance.
 
----
-<p align="center">
-  <img src="public/banner.jpg" width="100%" />
-</p>
+🌐 Live App: https://data-analysis-bi.github.io/pdf-pro/
 
+🔍 SEO‑Optimized Keywords (GitHub Search Boost)
+Code
+pdf pdf-tools pdf-editor pdf-utilities pdf-merge pdf-split pdf-compress pdf-watermark pdf-sign pdf-protect pdf-converter react vite tailwindcss javascript client-side offline privacy-first pdf-processing ocr batch-processing pdf-to-image image-to-pdf pdfpro pdf-toolkit
+✨ Features
+🚀 Core Tools
+🔗 Merge PDFs — Combine multiple documents into one clean file
 
+✂️ Split PDFs — Extract pages or split into multiple documents
 
-### 🧰 **Tech Stack**
-<p align="left">
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite" />
-  <img src="https://img.shields.io/badge/TailwindCSS-0EA5E9?style=for-the-badge&logo=tailwindcss" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript" />
-</p>
-
----
-
-# 🚀 **Overview**
-
-**PDFPro** is a modern, lightweight, and secure PDF utility that runs entirely in your browser.  
-No uploads. No servers. No tracking.  
-Just fast, offline‑capable PDF tools powered by cutting‑edge web technologies.
-
----
-
-# ✨ **Features**
-
-🚀 Core PDF Tools
-🔗 Merge PDFs — Combine multiple documents into a single, clean PDF
-
-✂️ Split PDFs — Extract specific pages or split into multiple files
-
-🗜️ Compress PDFs — Reduce file size while preserving quality
+🗜️ Compress PDFs — Reduce file size while preserving clarity
 
 🔄 Convert Anything — Images ↔ PDF, Text ↔ PDF
 
@@ -41,137 +21,92 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
 
 🔒 Privacy‑First — All processing happens locally in your browser
 
-⚡ Ultra‑Fast — Powered by Vite and optimized JavaScript utilities
+⚡ Ultra‑Fast — Powered by Vite + optimized JavaScript utilities
 
-🎨 Modern UI — Clean, responsive TailwindCSS design
+🎨 Modern UI — Clean, responsive TailwindCSS interface
 
 🛠️ Advanced Tools
+📎 Merge PDF — Combine multiple PDFs seamlessly
 
-📎 Merge PDF — Combine multiple PDFs into one seamless file
+✂️ Split PDF — Extract specific pages or ranges
 
-✂️ Split PDF — Extract pages or split into multiple documents
+🗜️ Compress PDF — Shrink file size without uploading
 
-🗜️ Compress PDF — Shrink file size with no uploads required
+🖼️ PDF to Image — Convert pages to PNG/JPG instantly
 
-🖼️ PDF to Image — Convert PDF pages to high‑quality PNG or JPG
-
-🖼️➡️📄 Image to PDF — Turn JPG/PNG images into a PDF instantly
+🖼️➡️📄 Image to PDF — Turn JPG/PNG images into PDFs
 
 📄 Edit Pages — Rotate, delete, or reorder pages visually
 
 💧 Add Watermark — Apply custom text watermarks — fully offline
 
-🔐 Protect PDF — Add password protection with client‑side encryption
+🔐 Protect PDF — Add password encryption (client‑side)
 
-✍️ Sign PDF — Draw or upload your signature and sign instantly
+✍️ Sign PDF — Draw or upload your signature
 
-🔍 OCR (Text Extraction) — Extract editable text from scanned PDFs
+🔍 OCR (Text Extraction) — Extract text from scanned PDFs
 
-📦 Batch Processing — Process multiple PDFs at once to save time
+📦 Batch Processing — Process dozens of PDFs at once
 
----
+🧰 Tech Stack
+React — Component‑based UI
 
-# 🎥 **Screenshots & Demo**
+Vite — Lightning‑fast bundler
 
-### 🌐 **Live Demo**  
-👉https://data-analysis-bi.github.io/pdf-pro/
+TailwindCSS — Utility‑first styling
 
-### 🖼️ **Screenshots**
+Client‑Side PDF Libraries — Secure, offline processing
 
-<p align="center">
-  <img src="screenshots/Light mode.png" width="700" />
-  <br/>
-  <em>LIGHT MODE </em>
-</p>
+Zero Backend — No server, no data collection
 
-<p align="center">
-  <img src="screenshots/Dark mode.png" width="700" />
-  <br/>
-  <em>DARK MODE </em>
-</p>
-
-
-# 🛠️ **Tech Architecture**
-
-PDFPro is built with a modular, scalable architecture:
-
-```
+🏗️ Project Structure
+Code
 pdf-pro/
 │
-├── public/                 # Static assets
+├── public/              # Static assets
 ├── src/
-│   ├── pdfUtils.js         # Core PDF processing logic
-│   ├── components/         # Reusable UI components
-│   ├── pages/              # Page-level views
-│   ├── hooks/              # Custom React hooks
-│   ├── styles/             # Tailwind + custom CSS
-│   └── utils/              # Helper utilities
+│   ├── components/      # Reusable UI components
+│   ├── pages/           # Tool pages (merge, split, compress, etc.)
+│   ├── pdfUtils.js      # Core PDF processing logic
+│   ├── hooks/           # Custom React hooks
+│   ├── styles/          # Tailwind + custom CSS
+│   └── utils/           # Helper utilities
 │
 ├── index.html
 ├── package.json
 ├── vite.config.js
 └── tailwind.config.js
-```
-
-### 🧠 **Core Concepts**
-
-- **Client‑side PDF processing** using browser APIs  
-- **Zero‑backend architecture** for maximum privacy  
-- **Optimized bundling** via Vite  
-- **Atomic UI components** for scalability  
-- **Tailwind utility classes** for rapid styling  
-
----
-
-# ⚙️ **Getting Started**
-
-### 1️⃣ Clone the repo  
-```bash
+⚙️ Getting Started
+1️⃣ Clone the repo
+bash
 git clone https://github.com/data-analysis-bi/pdf-pro.git
 cd pdf-pro
-```
-
-### 2️⃣ Install dependencies  
-```bash
+2️⃣ Install dependencies
+bash
 npm install
-```
-
-### 3️⃣ Start development  
-```bash
+3️⃣ Start development
+bash
 npm run dev
-```
-
-### 4️⃣ Build for production  
-```bash
+4️⃣ Build for production
+bash
 npm run build
-```
+🤝 Contributing
+Contributions are welcome! You can help by:
 
----
+Adding new PDF tools
 
-# 🤝 **Contributing**
+Improving UI/UX
 
-Contributions are welcome!  
-You can help by:
+Enhancing performance
 
-- Adding new PDF tools  
-- Improving UI/UX  
-- Enhancing performance  
-- Fixing bugs  
-- Writing documentation  
+Fixing bugs
+
+Writing documentation
 
 Submit a PR anytime.
 
----
+📜 License
+This project is licensed under the MIT License.
 
-# 📜 **License**
-
-This project is licensed under the **MIT License**.
-
----
-
-# ⭐ **Support the Project**
-
-If you like PDFPro, please consider giving the repo a ⭐  
-It helps visibility and motivates further development.
-
----
+⭐ Support the Project
+If you find PDFPro useful, please consider giving the repo a ⭐.

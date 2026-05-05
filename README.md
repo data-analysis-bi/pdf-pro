@@ -28,14 +28,46 @@ Just fast, offline‑capable PDF tools powered by cutting‑edge web technologie
 
 # ✨ **Features**
 
-- 🔗 **Merge PDFs** — Combine multiple files into one  
-- ✂️ **Split PDFs** — Extract pages or ranges  
-- 🗜️ **Compress PDFs** — Reduce file size efficiently  
-- 🔄 **Convert** — Images ↔ PDF, Text ↔ PDF  
-- 🔧 **Reorder Pages** — Drag‑and‑drop interface  
-- 🔒 **Privacy‑First** — All processing happens locally  
-- ⚡ **Ultra‑Fast** — Vite + optimized JS utilities  
-- 🎨 **Clean UI** — TailwindCSS responsive design  
+🚀 Core PDF Tools
+🔗 Merge PDFs — Combine multiple documents into a single, clean PDF
+
+✂️ Split PDFs — Extract specific pages or split into multiple files
+
+🗜️ Compress PDFs — Reduce file size while preserving quality
+
+🔄 Convert Anything — Images ↔ PDF, Text ↔ PDF
+
+🔧 Reorder Pages — Drag‑and‑drop to rearrange, rotate, or delete pages
+
+🔒 Privacy‑First — All processing happens locally in your browser
+
+⚡ Ultra‑Fast — Powered by Vite and optimized JavaScript utilities
+
+🎨 Modern UI — Clean, responsive TailwindCSS design
+
+🛠️ Advanced Tools
+
+📎 Merge PDF — Combine multiple PDFs into one seamless file
+
+✂️ Split PDF — Extract pages or split into multiple documents
+
+🗜️ Compress PDF — Shrink file size with no uploads required
+
+🖼️ PDF to Image — Convert PDF pages to high‑quality PNG or JPG
+
+🖼️➡️📄 Image to PDF — Turn JPG/PNG images into a PDF instantly
+
+📄 Edit Pages — Rotate, delete, or reorder pages visually
+
+💧 Add Watermark — Apply custom text watermarks — fully offline
+
+🔐 Protect PDF — Add password protection with client‑side encryption
+
+✍️ Sign PDF — Draw or upload your signature and sign instantly
+
+🔍 OCR (Text Extraction) — Extract editable text from scanned PDFs
+
+📦 Batch Processing — Process multiple PDFs at once to save time
 
 ---
 

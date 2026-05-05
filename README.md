@@ -25,6 +25,25 @@ Every operation — merging, splitting, compressing, converting, watermarking, s
 No uploads. No servers. No tracking. Just pure client‑side performance.
 
 ---
+# 🎥 **Screenshots & Demo**
+
+### 🌐 **Live Demo**  
+👉https://data-analysis-bi.github.io/pdf-pro/
+
+### 🖼️ **Screenshots**
+
+<p align="center">
+  <img src="screenshots/Light mode.png" width="700" />
+  <br/>
+  <em>LIGHT MODE </em>
+</p>
+
+<p align="center">
+  <img src="screenshots/Dark mode.png" width="700" />
+  <br/>
+  <em>DARK MODE </em>
+</p>
+---
 
 # ✨ **Features**
 
@@ -71,24 +90,6 @@ No uploads. No servers. No tracking. Just pure client‑side performance.
 
 ---
 
-# 🎥 **Screenshots & Demo**
-
-### 🌐 **Live Demo**  
-👉https://data-analysis-bi.github.io/pdf-pro/
-
-### 🖼️ **Screenshots**
-
-<p align="center">
-  <img src="screenshots/Light mode.png" width="700" />
-  <br/>
-  <em>LIGHT MODE </em>
-</p>
-
-<p align="center">
-  <img src="screenshots/Dark mode.png" width="700" />
-  <br/>
-  <em>DARK MODE </em>
-</p>
 
 
 # 🛠️ **Tech Architecture**
